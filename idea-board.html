@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Idea Board</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e8f4f8 100%);
+            padding: 20px;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(74, 144, 226, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(46, 204, 113, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 0;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #1a1a1a;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .header-badge {
+            display: inline-block;
+            background-color: #e8f4f8;
+            color: #2c7a99;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-left: auto;
+            text-transform: uppercase;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #4a90e2;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        /* Contributors Section */
+        .contributors-section {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            margin-bottom: 40px;
+        }
+
+        .contributors-title {
+            font-size: 1.1rem;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .contributors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 16px;
+        }
+
+        .contributor-card {
+            text-align: center;
+            padding: 16px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        .contributor-card:hover {
+            background-color: #f0f5ff;
+            transform: translateY(-2px);
+        }
+
+        .contributor-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .contributor-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+
+        .contributor-count {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        /* Search Section */
+        .search-section {
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px 16px 12px 40px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: white;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            pointer-events: none;
+        }
+
+        /* Input Section */
+        .input-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 14px;
+            font-size: 1rem;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background-color: #fafafa;
+        }
+
+        select:hover,
+        textarea:hover {
+            border-color: #d0d0d0;
+            background-color: #fff;
+        }
+
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #4a90e2;
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            padding-right: 40px;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px;
+            padding-right: 40px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+            max-height: 200px;
+        }
+
+        textarea::placeholder,
+        select:invalid {
+            color: #999;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        button {
+            padding: 12px 28px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #357abd 0%, #2a5a8f 100%);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: #4a90e2;
+            border: 2px solid #4a90e2;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f0f5ff;
+        }
+
+        /* Ideas List Section */
+        .ideas-section {
+            margin-top: 40px;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .ideas-list {
+            display: grid;
+            gap: 16px;
+        }
+
+        .idea-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border-left: 4px solid #4a90e2;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .idea-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .idea-content {
+            flex: 1;
+        }
+
+        .idea-text {
+            font-size: 1.05rem;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .idea-author {
+            font-size: 0.9rem;
+            color: #888;
+            font-weight: 400;
+        }
+
+        .idea-actions {
+            display: flex;
+            gap: 8px;
+            margin-left: 16px;
+        }
+
+        .btn-delete {
+            background-color: #f0f0f0;
+            color: #e74c3c;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-delete:hover {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        /* Avatar */
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+            margin-right: 12px;
+        }
+
+        .avatar-1 {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+        }
+
+        .avatar-2 {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .avatar-3 {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        }
+
+        .avatar-4 {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        }
+
+        .avatar-5 {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .empty-state-text {
+            font-size: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 30px 0 20px;
+            border-top: 1px solid #e8e8e8;
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: #4a90e2;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        footer a:hover {
+            color: #357abd;
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .stats-section {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .contributors-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+
+            .input-section {
+                padding: 20px;
+                margin-bottom: 30px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+            }
+
+            .idea-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .idea-actions {
+                margin-left: 0;
+                margin-top: 12px;
+                width: 100%;
+            }
+
+            .btn-delete {
+                flex: 1;
+                text-align: center;
+            }
+        }
+
+        /* Animation for new items */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .idea-card {
+            animation: slideIn 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-icon">🎓</span>
+                <span class="logo-text">UCSC</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-button home-btn">
+                        <span class="btn-icon">🏠</span>
+                        <span class="btn-text">Home</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="gpa.html" target="_blank" class="nav-button gpa-btn">
+                        <span class="btn-icon">📊</span>
+                        <span class="btn-text">GPA Calculator</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="pomodoro.html" target="_blank" class="nav-button pomodoro-btn">
+                        <span class="btn-icon">⏱️</span>
+                        <span class="btn-text">Pomodoro Timer</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <button id="darkModeToggle" class="nav-button theme-toggle">
+                        <span class="theme-icon">🌙</span>
+                    </button>
+                </li>
+            </ul>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>
+                <span>💡 Group Idea Board</span>
+                <span class="header-badge" id="ideaBadge">3 ideas shared</span>
+            </h1>
+        </header>
+
+        <!-- Stats Section -->
+        <section class="stats-section">
+            <div class="stat-card">
+                <div class="stat-icon">💡</div>
+                <div class="stat-number" id="totalIdeasCount">3</div>
+                <div class="stat-label">Total Ideas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-number" id="totalContributorsCount">3</div>
+                <div class="stat-label">Contributors</div>
+            </div>
+        </section>
+
+        <!-- Contributors Section -->
+        <section class="contributors-section">
+            <div class="contributors-title">🏆 Top Contributors</div>
+            <div class="contributors-grid" id="contributorsGrid">
+                <!-- Dynamically populated -->
+            </div>
+        </section>
+
+        <!-- Input Section -->
+        <section class="input-section">
+            <form id="ideaForm">
+                <div class="form-group">
+                    <label for="nameSelect">Who are you?</label>
+                    <select id="nameSelect" required>
+                        <option value="">Select your name...</option>
+                        <option value="Nimal">Nimal</option>
+                        <option value="Sara">Sara</option>
+                        <option value="Alex">Alex</option>
+                        <option value="Jordan">Jordan</option>
+                        <option value="Casey">Casey</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="ideaInput">Share your idea</label>
+                    <textarea 
+                        id="ideaInput" 
+                        placeholder="Enter your idea here..." 
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn-primary">Add Idea</button>
+                    <button type="reset" class="btn-secondary">Clear</button>
+                    <button type="button" class="btn-secondary" onclick="toggleFullscreen()">📺 Fullscreen</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Ideas List Section -->
+        <section class="ideas-section">
+            <h2 class="section-title">Recent Ideas</h2>
+            
+            <!-- Search Section -->
+            <div class="search-section">
+                <span class="search-icon">🔍</span>
+                <input 
+                    type="text" 
+                    class="search-box" 
+                    id="searchBox" 
+                    placeholder="Search ideas..."
+                >
+            </div>
+
+            <div class="ideas-list" id="ideasList">
+                <div class="idea-card">
+                    <div class="idea-content">
+                        <div style="display: flex; align-items: center;">
+                            <div class="avatar avatar-1">N</div>
+                            <div>
+                                <div class="idea-text">Build a study planner</div>
+                                <div class="idea-author">suggested by Nimal</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="idea-actions">
+                        <button class="btn-delete" onclick="this.parentElement.parentElement.remove()">Delete</button>
+                    </div>
+                </div>
+
+                <div class="idea-card">
+                    <div class="idea-content">
+                        <div style="display: flex; align-items: center;">
+                            <div class="avatar avatar-2">S</div>
+                            <div>
+                                <div class="idea-text">Start a podcast</div>
+                                <div class="idea-author">suggested by Sara</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="idea-actions">
+                        <button class="btn-delete" onclick="this.parentElement.parentElement.remove()">Delete</button>
+                    </div>
+                </div>
+
+                <div class="idea-card">
+                    <div class="idea-content">
+                        <div style="display: flex; align-items: center;">
+                            <div class="avatar avatar-3">A</div>
+                            <div>
+                                <div class="idea-text">Organize a coding workshop</div>
+                                <div class="idea-author">suggested by Alex</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="idea-actions">
+                        <button class="btn-delete" onclick="this.parentElement.parentElement.remove()">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Group Idea Board. All rights reserved. | Built with ❤️</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        const ideaForm = document.getElementById('ideaForm');
+        const nameSelect = document.getElementById('nameSelect');
+        const ideaInput = document.getElementById('ideaInput');
+        const ideasList = document.getElementById('ideasList');
+        const searchBox = document.getElementById('searchBox');
+        const ideaBadge = document.getElementById('ideaBadge');
+        const totalIdeasCount = document.getElementById('totalIdeasCount');
+        const totalContributorsCount = document.getElementById('totalContributorsCount');
+        const contributorsGrid = document.getElementById('contributorsGrid');
+
+        // Avatar color mapping
+        const avatarColors = {
+            'Nimal': 'avatar-1',
+            'Sara': 'avatar-2',
+            'Alex': 'avatar-3',
+            'Jordan': 'avatar-4',
+            'Casey': 'avatar-5'
+        };
+
+        // Initialize contributors storage
+        let contributorCount = {
+            'Nimal': 1,
+            'Sara': 1,
+            'Alex': 1
+        };
+
+        // Update stats and UI
+        function updateStats() {
+            const totalIdeas = ideasList.children.length;
+            const uniqueContributors = Object.keys(contributorCount).length;
+
+            totalIdeasCount.textContent = totalIdeas;
+            totalContributorsCount.textContent = uniqueContributors;
+            ideaBadge.textContent = totalIdeas + (totalIdeas === 1 ? ' idea shared' : ' ideas shared');
+
+            updateContributorsDisplay();
+        }
+
+        // Update contributors display grid
+        function updateContributorsDisplay() {
+            contributorsGrid.innerHTML = '';
+
+            // Sort contributors by count (descending)
+            const sortedContributors = Object.entries(contributorCount)
+                .sort((a, b) => b[1] - a[1]);
+
+            sortedContributors.forEach(([name, count]) => {
+                const avatarClass = avatarColors[name] || 'avatar-1';
+                const initials = name.charAt(0).toUpperCase();
+
+                const card = document.createElement('div');
+                card.className = 'contributor-card';
+                card.innerHTML = `
+                    <div class="contributor-avatar ${avatarClass}">${initials}</div>
+                    <div class="contributor-name">${name}</div>
+                    <div class="contributor-count">${count} ${count === 1 ? 'idea' : 'ideas'}</div>
+                `;
+                contributorsGrid.appendChild(card);
+            });
+        }
+
+        ideaForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const name = nameSelect.value;
+            const idea = ideaInput.value.trim();
+
+            if (!name || !idea) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            // Get avatar class
+            const avatarClass = avatarColors[name] || 'avatar-1';
+            const initials = name.charAt(0).toUpperCase();
+
+            // Create new idea card
+            const ideaCard = document.createElement('div');
+            ideaCard.className = 'idea-card';
+            ideaCard.innerHTML = `
+                <div class="idea-content">
+                    <div style="display: flex; align-items: center;">
+                        <div class="avatar ${avatarClass}">${initials}</div>
+                        <div>
+                            <div class="idea-text">${escapeHtml(idea)}</div>
+                            <div class="idea-author">suggested by ${escapeHtml(name)}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="idea-actions">
+                    <button class="btn-delete">Delete</button>
+                </div>
+            `;
+
+            // Add delete event listener
+            ideaCard.querySelector('.btn-delete').addEventListener('click', function() {
+                const author = ideaCard.querySelector('.idea-author').textContent.replace('suggested by ', '');
+                
+                // Update contributor count
+                if (contributorCount[author] > 0) {
+                    contributorCount[author]--;
+                    if (contributorCount[author] === 0) {
+                        delete contributorCount[author];
+                    }
+                }
+
+                ideaCard.remove();
+                updateStats();
+                filterIdeas();
+            });
+
+            // Add to list
+            ideasList.insertBefore(ideaCard, ideasList.firstChild);
+
+            // Update contributor count
+            contributorCount[name] = (contributorCount[name] || 0) + 1;
+
+            // Update stats
+            updateStats();
+
+            // Clear search after adding
+            searchBox.value = '';
+
+            // Reset form
+            ideaForm.reset();
+            nameSelect.focus();
+        });
+
+        // Search/Filter functionality
+        searchBox.addEventListener('input', filterIdeas);
+
+        function filterIdeas() {
+            const query = searchBox.value.toLowerCase();
+            const ideas = ideasList.querySelectorAll('.idea-card');
+
+            ideas.forEach(idea => {
+                const text = idea.textContent.toLowerCase();
+                if (text.includes(query)) {
+                    idea.style.display = '';
+                } else {
+                    idea.style.display = 'none';
+                }
+            });
+        }
+
+        // Helper function to escape HTML
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // Fullscreen Toggle
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', function() {
+            updateStats();
+        });
+    </script>
+</body>
+</html>

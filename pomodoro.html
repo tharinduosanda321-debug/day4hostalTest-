@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Timer - UCSC</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-icon">🎓</span>
+                <span class="logo-text">UCSC</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-button home-btn">
+                        <span class="btn-icon">🏠</span>
+                        <span class="btn-text">Home</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="gpa.html" target="_blank" class="nav-button gpa-btn">
+                        <span class="btn-icon">📊</span>
+                        <span class="btn-text">GPA Calculator</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="idea-board.html" target="_blank" class="nav-button ideas-btn">
+                        <span class="btn-icon">💡</span>
+                        <span class="btn-text">Group Idea Flow</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <button id="darkModeToggle" class="nav-button theme-toggle">
+                        <span class="theme-icon">🌙</span>
+                    </button>
+                </li>
+            </ul>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Pomodoro Timer Section -->
+        <section class="pomodoro-section" id="pomodoro">
+            <h2 class="section-title">⏱️ Pomodoro Timer</h2>
+
+            <div class="pomodoro-container">
+                <!-- Timer Display -->
+                <div class="timer-display">
+                    <div class="timer-circle">
+                        <div class="timer-progress" id="timerProgress"></div>
+                        <div class="timer-text">
+                            <div class="time-display" id="time-display">25:00</div>
+                            <div class="session-type" id="session-type">Work Session</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timer Controls -->
+                <div class="timer-controls">
+                    <button class="timer-btn start-btn" id="start-btn">
+                        <span class="btn-icon">▶️</span>
+                        Start
+                    </button>
+                    <button class="timer-btn pause-btn" id="pause-btn" disabled>
+                        <span class="btn-icon">⏸️</span>
+                        Pause
+                    </button>
+                    <button class="timer-btn reset-btn" id="reset-btn">
+                        <span class="btn-icon">🔄</span>
+                        Reset
+                    </button>
+                    <button class="timer-btn reset-btn" style="background-color: #34495e;" onclick="toggleFullscreen()">
+                        <span class="btn-icon">📺</span>
+                        Fullscreen
+                    </button>
+                </div>
+
+                <!-- Session Settings -->
+                <div class="session-settings">
+                    <div class="setting-group">
+                        <label for="workDuration">Work Duration (minutes)</label>
+                        <input type="number" id="work-time" value="25" min="1" max="60">
+                    </div>
+                    <div class="setting-group">
+                        <label for="breakDuration">Break Duration (minutes)</label>
+                        <input type="number" id="break-time" value="5" min="1" max="30">
+                    </div>
+                    <div class="setting-group">
+                        <label for="longBreakDuration">Long Break (minutes)</label>
+                        <input type="number" id="long-break-time" value="15" min="1" max="60">
+                    </div>
+                    <div class="setting-group">
+                        <label for="sessionsUntilLongBreak">Sessions until Long Break</label>
+                        <input type="number" id="sessions-before-long" value="4" min="1" max="10">
+                    </div>
+                </div>
+
+                <!-- Session Stats -->
+                <div class="session-stats">
+                    <div class="stat-card">
+                        <h3>Today's Progress</h3>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-number" id="completed-sessions">0</span>
+                                <span class="stat-label">Completed Sessions</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number" id="total-sessions">0</span>
+                                <span class="stat-label">Total Sessions</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number" id="total-time">0m</span>
+                                <span class="stat-label">Total Time</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Session History -->
+                <div class="session-history">
+                    <h3>Recent Sessions</h3>
+                    <div class="history-list" id="historyList">
+                        <div class="history-item empty">
+                            <span>No sessions completed yet</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 UCSC Tools. All rights reserved. | Built with ❤️</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="pomodoro.js"></script>
+    <script>
+        // Dark mode toggle functionality (same as main page)
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.querySelector('.nav-menu');
+
+        darkModeToggle.addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+
+            const icon = darkModeToggle.querySelector('.theme-icon');
+            if (document.body.classList.contains('dark-mode')) {
+                icon.textContent = '☀️';
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                icon.textContent = '🌙';
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        });
+
+        hamburger.addEventListener('click', function() {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+
+        document.querySelectorAll('.nav-button').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (this.id !== 'darkModeToggle') {
+                    hamburger.classList.remove('active');
+                    navMenu.classList.remove('active');
+                }
+            });
+        });
+
+        // Load dark mode preference
+        window.addEventListener('load', function() {
+            const darkModeEnabled = localStorage.getItem('darkMode') === 'enabled';
+            if (darkModeEnabled) {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.querySelector('.theme-icon').textContent = '☀️';
+            }
+        });
+
+        // Fullscreen Toggle
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
